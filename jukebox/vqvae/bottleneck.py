@@ -7,6 +7,7 @@ from torch.autograd import Variable
 
 class BottleneckBlock(nn.Module):
     def __init__(self, k_bins, emb_width, mu):
+        print("DOR VERSION!!!!")
         super().__init__()
         self.base = Variable(t.rand(1, emb_width), requires_grad=True)
         self.k_bins = k_bins
