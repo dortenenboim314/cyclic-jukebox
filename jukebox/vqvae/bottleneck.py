@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import jukebox.utils.dist_adapter as dist
 from torch.autograd import Variable
+from jukebox.utils.dist_utils import print_all
 
 class BottleneckBlock(nn.Module):
     def __init__(self, k_bins, emb_width, mu):
@@ -179,9 +180,9 @@ class BottleneckBlock(nn.Module):
         commit_loss = t.norm(x_d.detach() - x) ** 2 / np.prod(x.shape)
         # q_latent_loss = t.reduce_mean((x_d - tf.stop_gradient(inputs)) ** 2)
 
-        print(x_d.shape)
-        print(x_l.shape)
-        print(x.shape)
+        print_all(x_d.shape)
+        print_all(x_l.shape)
+        print_all(x.shape)
 
 
         # Passthrough
