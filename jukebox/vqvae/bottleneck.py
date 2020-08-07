@@ -3,15 +3,19 @@ import torch as t
 import torch.nn as nn
 import torch.nn.functional as F
 import jukebox.utils.dist_adapter as dist
+from torch.autograd import Variable
 
 class BottleneckBlock(nn.Module):
     def __init__(self, k_bins, emb_width, mu):
         super().__init__()
+        self.base = Variable(t.rand(1, emb_width), requires_grad=True)
         self.k_bins = k_bins
         self.emb_width = emb_width
         self.mu = mu
         self.reset_k()
         self.threshold = 1.0
+
+        self.dor_first = True
 
     def reset_k(self):
         self.init = False
@@ -146,6 +150,9 @@ class BottleneckBlock(nn.Module):
         x_d = x_d.view(N, T, width).permute(0, 2, 1).contiguous()
         return x_d
 
+    def get_cur_embeddings(self):
+
+
     def forward(self, x, update_k=True):
         N, width, T = x.shape
 
@@ -155,6 +162,7 @@ class BottleneckBlock(nn.Module):
         # Init k if not inited
         if update_k and not self.init:
             self.init_k(x)
+        # self.k = self.get_cur_embeddings()
 
         # Quantise and dequantise through bottleneck
         x_l, fit = self.quantise(x)
@@ -168,6 +176,14 @@ class BottleneckBlock(nn.Module):
 
         # Loss
         commit_loss = t.norm(x_d.detach() - x) ** 2 / np.prod(x.shape)
+        # q_latent_loss = t.reduce_mean((x_d - tf.stop_gradient(inputs)) ** 2)
+
+        if (self.dor_first):
+            self.dor_first = False
+            print(x_d.shape)
+            print(x_l.shape)
+            print(x.shape)
+
 
         # Passthrough
         x_d = x + (x_d - x).detach()
