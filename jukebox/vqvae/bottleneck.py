@@ -150,7 +150,7 @@ class BottleneckBlock(nn.Module):
         x_d = x_d.view(N, T, width).permute(0, 2, 1).contiguous()
         return x_d
 
-    def get_cur_embeddings(self):
+    # def get_cur_embeddings(self):
 
 
     def forward(self, x, update_k=True):
