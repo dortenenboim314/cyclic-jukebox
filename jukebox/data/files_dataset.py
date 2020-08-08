@@ -6,6 +6,7 @@ from torch.utils.data import Dataset
 from jukebox.utils.dist_utils import print_all
 from jukebox.utils.io import get_duration_sec, load_audio
 from jukebox.data.labels import Labeller
+import os
 
 class FilesAudioDataset(Dataset):
     def __init__(self, hps):
@@ -39,6 +40,8 @@ class FilesAudioDataset(Dataset):
         # Load list of files and starts/durations
         files = librosa.util.find_files(f'{hps.audio_files_dir}', ['mp3', 'opus', 'm4a', 'aac', 'wav'])
         print_all(f"Found {len(files)} files. Getting durations")
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        print_all(dir_path)
         cache = dist.get_rank() % 8 == 0 if dist.is_available() else True
         durations = np.array([get_duration_sec(file, cache=cache) * self.sr for file in files])  # Could be approximate
         self.filter(files, durations)
