@@ -39,7 +39,7 @@ class FilesAudioDataset(Dataset):
     def init_dataset(self, hps):
         # Load list of files and starts/durations
         print(hps.audio_files_dir)
-        files = librosa.util.find_files(f'{hps.audio_files_dir}', ['mp3', 'opus', 'm4a', 'aac', 'wav', 'midi'])
+        files = librosa.util.find_files(f'{hps.audio_files_dir}', ['mp3', 'opus', 'm4a', 'aac', 'wav'])
         print_all(f"Found {len(files)} files. Getting durations")
         dir_path = os.path.dirname(os.path.realpath(__file__))
         print_all(dir_path)
