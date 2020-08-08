@@ -301,6 +301,7 @@ def run(hps="teeny", port=29500, **kwargs):
     hps.bs_sample = hps.nworkers = hps.bs
 
     # Setup dataset
+    print(hps)
     data_processor = DataProcessor(hps)
 
     # Setup models
