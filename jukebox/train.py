@@ -293,6 +293,7 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
 
 def run(hps="teeny", port=29500, **kwargs):
     from jukebox.utils.dist_utils import setup_dist_from_mpi
+    print("dor version")
     rank, local_rank, device = setup_dist_from_mpi(port=port)
     hps = setup_hparams(hps, kwargs)
     hps.ngpus = dist.get_world_size()
