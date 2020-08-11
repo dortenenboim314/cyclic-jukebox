@@ -181,9 +181,9 @@ class BottleneckBlock(nn.Module):
         # q_latent_loss = t.reduce_mean((x_d - tf.stop_gradient(inputs)) ** 2)
 
         print_all("DOR PRINTS SHAPES")
-        print_all(x_d.shape)
+        print_all(x_d.shape) # same shape as
         print_all(x_l.shape)
-        print_all(x.shape)
+        print_all(x.shape) # this one
 
 
         # Passthrough

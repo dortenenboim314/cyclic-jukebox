@@ -20,6 +20,7 @@ from jukebox.utils.dist_utils import print_once, allreduce, allgather
 from jukebox.utils.ema import CPUEMA, FusedEMA, EMA
 from jukebox.utils.fp16 import FP16FusedAdam, FusedAdam, LossScalar, clipped_grad_scale, backward
 from jukebox.data.data_processor import DataProcessor
+from jukebox.utils.dist_utils import print_all
 
 def prepare_aud(x, hps):
     x = audio_postprocess(x.detach().contiguous(), hps)
@@ -207,6 +208,9 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
         _print_keys = dict(l="loss", bpd="bpd", gn="gn", g_l="gen_loss", p_l="prime_loss")
     else:
         _print_keys = dict(l="loss", sl="spectral_loss", rl="recons_loss", e="entropy", u="usage", uc="used_curr", gn="gn", pn="pn", dk="dk")
+
+    print_all(data_processor.train_loader)
+    print_all(len(data_processor.train_loader))
 
     for i, x in logger.get_range(data_processor.train_loader):
         if isinstance(x, (tuple, list)):
