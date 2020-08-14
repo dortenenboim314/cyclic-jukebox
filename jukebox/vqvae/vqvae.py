@@ -76,7 +76,7 @@ class VQVAE(nn.Module):
             self.decoders.append(decoder(level))
 
         if use_bottleneck:
-            self.bottleneck = Bottleneck(256, 256, mu, levels)
+            self.bottleneck = Bottleneck(l_bins, emb_width, mu, levels)
         else:
             self.bottleneck = NoBottleneck(levels)
 
