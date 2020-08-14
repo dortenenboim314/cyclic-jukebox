@@ -40,6 +40,9 @@ def load_checkpoint(path):
 
 def save_checkpoint(logger, name, model, opt, metrics, hps):
     with t.no_grad():
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        print_all("dir path: " + dir_path)
+        print_all(logger.logdir)
         save_hps = {**hps}
         save_hps = {k: v for k,v in save_hps.items() if k not in ['metadata_v2','metadata_v3', 'alignments', 'lyric_processor', 'midi_processor']}
         t.save({'hps': save_hps,
