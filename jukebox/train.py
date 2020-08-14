@@ -271,11 +271,11 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
             print_all(hps.save)
             print_all(hps.save_iters)
             if hps.save and (logger.iters % hps.save_iters == 1 or finished_training):
-                print_all("saving checkpoint")
                 if ema is not None: ema.swap()
                 orig_model.eval()
                 name = 'latest' if hps.prior else f'step_{logger.iters}'
                 if dist.get_rank() % 8 == 0:
+                    print_all("saving checkpoint")
                     save_checkpoint(logger, name, orig_model, opt, dict(step=logger.iters), hps)
                 orig_model.train()
                 if ema is not None: ema.swap()
