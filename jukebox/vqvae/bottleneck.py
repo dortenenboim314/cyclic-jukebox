@@ -9,6 +9,8 @@ from jukebox.utils.dist_utils import print_all
 class BottleneckBlock(nn.Module):
     def __init__(self, k_bins, emb_width, mu):
         print("DOR VERSION!!!!")
+        print_all("K_bins: " + str(k_bins))
+        print_all("EMB_WIDTH: " + str(emb_width))
         super().__init__()
         self.base = Variable(t.rand(1, emb_width), requires_grad=True).cuda()
         self.k_bins = k_bins
