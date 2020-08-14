@@ -294,9 +294,9 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
             if log_input_output:
                 log_inputs(orig_model, logger, x_in, y, x_out, hps)
 
-        print("Hey there")
-        logger.set_postfix(**{print_key:_metrics[key] for print_key, key in _print_keys.items()})
-        print("by there")
+        # print("Hey there")
+        # logger.set_postfix(**{print_key:_metrics[key] for print_key, key in _print_keys.items()})
+        # print("by there")
         if finished_training:
             dist.barrier()
             exit()
