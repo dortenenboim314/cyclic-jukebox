@@ -79,8 +79,8 @@ class BottleneckBlock(nn.Module):
             self.k_sum = mu * self.k_sum + (1. - mu) * _k_sum  # w, k_bins
             self.k_elem = mu * self.k_elem + (1. - mu) * _k_elem  # k_bins
             usage = (self.k_elem.view(k_bins, 1) >= self.threshold).float()
-            self.k = usage * (self.k_sum.view(k_bins, emb_width) / self.k_elem.view(k_bins, 1)) \
-                     + (1 - usage) * _k_rand
+            # self.k = usage * (self.k_sum.view(k_bins, emb_width) / self.k_elem.view(k_bins, 1)) \
+            #          + (1 - usage) * _k_rand
             _k_prob = _k_elem / t.sum(_k_elem)  # x_l_onehot.mean(dim=-1)  # prob of each bin
             entropy = -t.sum(_k_prob * t.log(_k_prob + 1e-8))  # entropy ie how diverse
             used_curr = (_k_elem >= self.threshold).sum()
@@ -171,11 +171,10 @@ class BottleneckBlock(nn.Module):
         x_d = self.dequantise(x_l)
 
         # Update embeddings
-        # if update_k:
-        #     update_metrics = self.update_k(x, x_l)
-        # else:
-        #     update_metrics = {}
-        update_metrics = {}
+        if update_k:
+            update_metrics = self.update_k(x, x_l)
+        else:
+            update_metrics = {}
 
         # Loss
         commit_loss = t.norm(x_d.detach() - x) ** 2 / np.prod(x.shape)
