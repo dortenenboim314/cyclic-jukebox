@@ -165,8 +165,6 @@ class BottleneckBlock(nn.Module):
         if update_k and not self.init:
             self.init_k(x)
         self.k = self.get_cur_embeddings()
-        print_all(self.base)
-        print_all(self.k)
 
         # Quantise and dequantise through bottleneck
         x_l, fit = self.quantise(x)
