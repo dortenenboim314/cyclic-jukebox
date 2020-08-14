@@ -160,7 +160,7 @@ class VQVAE(nn.Module):
             x_out = encoder(x_in)
             xs.append(x_out[-1])
 
-        zs, xs_quantised, commit_losses, quantiser_metrics = self.bottleneck(xs)
+        zs, xs_quantised, commit_losses, quantiser_metrics, q_latent_losses = self.bottleneck(xs)
         x_outs = []
         for level in range(self.levels):
             decoder = self.decoders[level]
@@ -201,7 +201,8 @@ class VQVAE(nn.Module):
             multispec_loss += this_multispec_loss
 
         commit_loss = sum(commit_losses)
-        loss = recons_loss + self.spectral * spec_loss + self.multispectral * multispec_loss + self.commit * commit_loss
+        q_latent_loss = sum(q_latent_losses)
+        loss = recons_loss + self.spectral * spec_loss + self.multispectral * multispec_loss + self.commit * commit_loss + q_latent_loss
 
         with t.no_grad():
             sc = t.mean(spectral_convergence(x_target, x_out, hps))

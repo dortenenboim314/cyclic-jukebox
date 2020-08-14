@@ -10,7 +10,7 @@ class BottleneckBlock(nn.Module):
     def __init__(self, k_bins, emb_width, mu):
         print("DOR VERSION!!!!")
         super().__init__()
-        self.base = Variable(t.rand(1, emb_width), requires_grad=True)
+        self.base = Variable(t.rand(1, emb_width), requires_grad=True).cuda()
         self.k_bins = k_bins
         self.emb_width = emb_width
         self.mu = mu
@@ -152,8 +152,8 @@ class BottleneckBlock(nn.Module):
         x_d = x_d.view(N, T, width).permute(0, 2, 1).contiguous()
         return x_d
 
-    # def get_cur_embeddings(self):
-
+    def get_cur_embeddings(self):
+        return t.cat([t.roll(self.base, i, -1) for i in range(self.k_bins)], dim=0)
 
     def forward(self, x, update_k=True):
         N, width, T = x.shape
@@ -164,21 +164,22 @@ class BottleneckBlock(nn.Module):
         # Init k if not inited
         if update_k and not self.init:
             self.init_k(x)
-        # self.k = self.get_cur_embeddings()
+        self.k = self.get_cur_embeddings()
 
         # Quantise and dequantise through bottleneck
         x_l, fit = self.quantise(x)
         x_d = self.dequantise(x_l)
 
         # Update embeddings
-        if update_k:
-            update_metrics = self.update_k(x, x_l)
-        else:
-            update_metrics = {}
+        # if update_k:
+        #     update_metrics = self.update_k(x, x_l)
+        # else:
+        #     update_metrics = {}
+        update_metrics = {}
 
         # Loss
         commit_loss = t.norm(x_d.detach() - x) ** 2 / np.prod(x.shape)
-        # q_latent_loss = t.reduce_mean((x_d - tf.stop_gradient(inputs)) ** 2)
+        q_latent_loss = t.reduce_mean((x_d - x.detach()) ** 2)
 
         print_all("DOR PRINTS SHAPES")
         print_all(x_d.shape) # same shape as
@@ -193,7 +194,7 @@ class BottleneckBlock(nn.Module):
         x_l, x_d = self.postprocess(x_l, x_d, (N,T))
         return x_l, x_d, commit_loss, dict(fit=fit,
                                            pn=prenorm,
-                                           **update_metrics)
+                                           **update_metrics), q_latent_loss
 
 
 class Bottleneck(nn.Module):
@@ -216,11 +217,11 @@ class Bottleneck(nn.Module):
         return xs_quantised
 
     def forward(self, xs):
-        zs, xs_quantised, commit_losses, metrics = [], [], [], []
+        zs, xs_quantised, commit_losses, metrics, q_latent_losses = [], [], [], [], []
         for level in range(self.levels):
             level_block = self.level_blocks[level]
             x = xs[level]
-            z, x_quantised, commit_loss, metric = level_block(x, update_k=self.training)
+            z, x_quantised, commit_loss, metric, q_latent_loss = level_block(x, update_k=self.training)
             zs.append(z)
             if not self.training:
                 # Be extra paranoid and make sure the encoder weights can't
@@ -228,9 +229,10 @@ class Bottleneck(nn.Module):
                 x_quantised = x_quantised.detach()
             xs_quantised.append(x_quantised)
             commit_losses.append(commit_loss)
+            q_latent_losses.append(q_latent_loss)
             if self.training:
                 metrics.append(metric)
-        return zs, xs_quantised, commit_losses, metrics
+        return zs, xs_quantised, commit_losses, metrics, q_latent_losses
 
 class NoBottleneckBlock(nn.Module):
     def restore_k(self):
