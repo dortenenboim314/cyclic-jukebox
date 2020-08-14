@@ -179,7 +179,7 @@ class BottleneckBlock(nn.Module):
 
         # Loss
         commit_loss = t.norm(x_d.detach() - x) ** 2 / np.prod(x.shape)
-        q_latent_loss = t.reduce_mean((x_d - x.detach()) ** 2)
+        q_latent_loss = t.mean((x_d - x.detach()) ** 2)
 
         print_all("DOR PRINTS SHAPES")
         print_all(x_d.shape) # same shape as
