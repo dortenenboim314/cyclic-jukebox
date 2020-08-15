@@ -155,7 +155,7 @@ class BottleneckBlock(nn.Module):
         return x_d
 
     def get_cur_embeddings(self):
-        dict_len = max(self.k_bins, self.emb_width)
+        dict_len = min(self.k_bins, self.emb_width)
         return t.cat([t.roll(self.base, i, -1) for i in range(dict_len)], dim=0)
 
     def forward(self, x, update_k=True):
