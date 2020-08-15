@@ -266,7 +266,7 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
             if logger.iters % hps.log_steps == 0:
                 logger.add_scalar(key, _metrics[key])
 
-        # hps.save_iters = 100
+        hps.save_iters = 100
 
         # Save checkpoint
         with t.no_grad():
@@ -335,7 +335,7 @@ def run(hps="teeny", port=29500, **kwargs):
     logger.iters = model.step
 
     print_all("num of EPOCHS : " + str(hps.epochs))
-    # hps.epochs = 2
+    hps.epochs = 2
     print_all("num of EPOCHS : " + str(hps.epochs))
     # Run training, eval, sample
     for epoch in range(hps.curr_epoch, hps.epochs):
