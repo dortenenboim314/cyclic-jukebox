@@ -337,8 +337,8 @@ def run(hps="teeny", port=29500, **kwargs):
     logger.iters = model.step
 
     print_all("num of EPOCHS : " + str(hps.epochs))
-    hps.epochs = 1
-    print_all("num of EPOCHS : " + str(hps.epochs))
+    # hps.epochs = 1
+    # print_all("num of EPOCHS : " + str(hps.epochs))
     # Run training, eval, sample
     for epoch in range(hps.curr_epoch, hps.epochs):
         metrics.reset()
