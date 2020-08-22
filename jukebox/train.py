@@ -270,8 +270,8 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
 
         # Save checkpoint
         with t.no_grad():
-            print_all(hps.save)
-            print_all(hps.save_iters)
+            # print_all(hps.save)
+            # print_all(hps.save_iters)
             if hps.save and (logger.iters % hps.save_iters == 1 or finished_training):
                 if ema is not None: ema.swap()
                 orig_model.eval()
