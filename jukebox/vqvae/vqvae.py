@@ -6,6 +6,7 @@ from jukebox.vqvae.encdec import Encoder, Decoder, assert_shape
 from jukebox.vqvae.bottleneck import NoBottleneck, Bottleneck
 from jukebox.utils.logger import average_metrics
 from jukebox.utils.audio_utils import spectral_convergence, spectral_loss, multispectral_loss, audio_postprocess
+from jukebox.utils.dist_utils import print_all
 
 def dont_update(params):
     for param in params:
@@ -202,6 +203,8 @@ class VQVAE(nn.Module):
 
         commit_loss = sum(commit_losses)
         q_latent_loss = sum(q_latent_losses)
+        print_all("Q LATENT LOSSES: ")
+        print_all(q_latent_losses)
         loss = recons_loss + self.spectral * spec_loss + self.multispectral * multispec_loss + self.commit * commit_loss + q_latent_loss
 
         with t.no_grad():
