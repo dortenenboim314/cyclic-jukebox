@@ -19,6 +19,8 @@ class BottleneckBlock(nn.Module):
         self.reset_k()
         self.threshold = 1.0
 
+        self.iters = 0
+
         self.dor_first = True
 
     def reset_k(self):
@@ -159,6 +161,15 @@ class BottleneckBlock(nn.Module):
         dict_len = self.k_bins
         return t.cat([t.roll(self.base, i, -1) for i in range(dict_len)], dim=0)
 
+    def print_embeddings(self):
+        self.iters = self.iters + 1
+        print_every = 1
+        if self.iters % print_every == 0:
+            print_all("BASE VECTOR: ")
+            print_all(self.base)
+            print_all("EMBEDDINGS: ")
+            print_all(self.k)
+
     def forward(self, x, update_k=True):
         N, width, T = x.shape
 
@@ -169,6 +180,9 @@ class BottleneckBlock(nn.Module):
         if update_k and not self.init:
             self.init_k(x)
         self.k = self.get_cur_embeddings()
+
+        self.print_embeddings()
+
 
         # Quantise and dequantise through bottleneck
         x_l, fit = self.quantise(x)
