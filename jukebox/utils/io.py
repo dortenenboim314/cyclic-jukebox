@@ -2,6 +2,7 @@ import numpy as np
 import av
 import torch as t
 import jukebox.utils.dist_adapter as dist
+from jukebox.utils.dist_utils import print_all
 
 def get_duration_sec(file, cache=False):
     try:
@@ -45,14 +46,18 @@ def load_audio(file, sr, offset, duration, resample=True, approx=False, time_bas
         if resample:
             frame.pts = None
             frame = resampler.resample(frame)
-        frame = frame.to_ndarray(format='fltp') # Convert to floats and not int16
-        read = frame.shape[-1]
-        if total_read + read > duration:
-            read = duration - total_read
-        sig[:, total_read:total_read + read] = frame[:, :read]
-        total_read += read
-        if total_read == duration:
-            break
+        if (frame is not None):
+            frame = frame.to_ndarray(format='fltp') # Convert to floats and not int16
+            read = frame.shape[-1]
+            if total_read + read > duration:
+                read = duration - total_read
+            sig[:, total_read:total_read + read] = frame[:, :read]
+            total_read += read
+            if total_read == duration:
+                break
+        else:
+            print_all("Frame was NONE !!!")
+
     assert total_read <= duration, f'Expected {duration} frames, got {total_read}'
     return sig, sr
 
