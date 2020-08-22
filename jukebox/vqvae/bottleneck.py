@@ -163,7 +163,7 @@ class BottleneckBlock(nn.Module):
 
     def print_embeddings(self):
         self.iters = self.iters + 1
-        print_every = 1
+        print_every = 150
         if self.iters % print_every == 0:
             print_all("BASE VECTOR: ")
             print_all(self.base)
