@@ -236,6 +236,12 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
         # Backward
         loss, scale, grad_norm, overflow_loss, overflow_grad = backward(loss=loss, params=list(model.parameters()),
                                                                          scalar=scalar, fp16=hps.fp16, logger=logger)
+
+        for p in model.parameters():
+            print(p.shape)
+            if p.shape == [512,512]:
+                print(p.grad.norm())
+
         # Skip step if overflow
         grad_norm = allreduce(grad_norm, op=dist.ReduceOp.MAX)
         if overflow_loss or overflow_grad or grad_norm > hps.ignore_grad_norm > 0:
