@@ -238,8 +238,8 @@ def train(model, orig_model, opt, shd, scalar, ema, logger, metrics, data_proces
                                                                          scalar=scalar, fp16=hps.fp16, logger=logger)
 
         for p in model.parameters():
-            print(p.shape)
-            if p.shape == [512,512]:
+            if 512 in p.shape:
+                print(p.shape)
                 print(p.grad.norm())
 
         # Skip step if overflow
